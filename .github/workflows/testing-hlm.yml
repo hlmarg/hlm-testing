@@ -1,0 +1,14 @@
+name: Testing hlm workflows
+
+on: workflow_dispatch
+
+env:
+  ARM_CLIENT_SECRET: ${{ secrets.SPN_SECRET_ID }}
+
+
+jobs:
+  build_if_merged:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout Repository
