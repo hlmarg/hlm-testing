@@ -27,6 +27,7 @@ jobs:
     - name: 'Resolve Project Dependencies Using Npm'
       shell: bash
       run: |
+        cd myExpressApp
         npm install
     
     - name: Generate Artifact name
