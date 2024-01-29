@@ -46,13 +46,13 @@ jobs:
         echo "ArtifactName=$artname" >> $GITHUB_OUTPUT
 
     - name: Generate a zip files
-      run: zip --symlinks -r {{ env.ZIP_FILE_NAME }} ./* -x DevOps/\* -x src/\* -x test/\* -x docker/\* -x .git/\* -x .github/\* -x *.json
+      run: zip --symlinks -r ${{ env.ZIP_FILE_NAME }} ./* -x DevOps/\* -x src/\* -x test/\* -x docker/\* -x .git/\* -x .github/\* -x *.json
 
     - name: Upload build artifact 
       uses: actions/upload-artifact@v3
       with: 
         name: ${{ env.ARTIFACT_NAME }}
-        path: hlm-slot-test.zip
+        path: ${{ env.ZIP_FILE_NAME }}
         retention-days: 1
 
   deploy:
