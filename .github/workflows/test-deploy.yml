@@ -58,9 +58,6 @@ jobs:
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
-    env:
-      ArtifactName: ${{ needs.build.outputs.ArtifactName }}
-      webapp: ${{ needs.webapp-config.outputs.webapp }}
     
     steps:
     - name: 'Checkout GitHub action'
