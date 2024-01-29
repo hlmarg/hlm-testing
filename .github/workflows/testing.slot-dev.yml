@@ -75,6 +75,17 @@ jobs:
       with:
           creds: ${{ secrets.EXIT83_AZURE_SPN }}
     
+    - name: Slot Verification.
+      shell: pwsh
+      run: |
+        $Slots=az webapp deployment slot list -n hlm-slots-test -g HernanMolina --query [].name -o tsv
+        if ($Slots -contains "dev") {
+          echo "Slot dev exists"
+        } else {
+          echo "Slot dev does not exists"
+          az webapp deployment slot create -n hlm-slots-test -g HernanMolina -s dev
+        }
+   
 ## Deploy alternatives for WebApps
 
     - name: 'Deploy WebApp'
