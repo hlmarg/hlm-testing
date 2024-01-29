@@ -39,7 +39,7 @@ jobs:
         echo "ArtifactName=$artname" >> $GITHUB_OUTPUT
 
     - name: Generate a zip files
-      run: zip --symlinks -r hlm-slots-test.zip ./* -x DevOps/\* -x src/\* -x test/\* -x docker/\* -x .git/\* -x .github/\* -x *.json
+      run: zip --symlinks -r hlm-slot-test.zip ./* -x DevOps/\* -x src/\* -x test/\* -x docker/\* -x .git/\* -x .github/\* -x *.json
 
     - name: Upload build artifact 
       uses: actions/upload-artifact@v3
