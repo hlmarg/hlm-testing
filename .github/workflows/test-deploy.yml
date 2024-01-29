@@ -75,7 +75,7 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: hlm-slots-test
-        package: hlm-slots-test.zip
+        package: hlm-slot-test.zip
        # publish-profile: ${{ steps.publishprofile.outputs.profile }}
         startup-command: 'npm start'
 
