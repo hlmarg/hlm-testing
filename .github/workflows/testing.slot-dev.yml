@@ -85,6 +85,21 @@ jobs:
           echo "Slot dev does not exists"
           az webapp deployment slot create -n hlm-slots-test -g HernanMolina -s dev
         }
+        ##Create the Environment Varibles"
+        $pathfile= './DevOps/variables/variables.json'
+        $variables=Get-Content $pathfile |ConvertFrom-Json
+        $varstodefine=$variables.Variables |where {$_.env -contains dev}
+        foreach ($var in $varstodefine) {
+          $varjson=@"
+          {
+            "name": "$var.key",
+            "slotSetting": 
+            "value": "$var.Value"
+          }
+          "@
+          az webapp config appsettings set --name $env:webapp -g $env:rg_name --settings ($var.key + "=" + $var.Value) -slot dev -o none
+          az webapp config appsettings set --name $env:webapp -g $env:rg_name --settings ($var.key + "=" + $var.Value) -s dev -o none
+        }
    
 ## Deploy alternatives for WebApps
 

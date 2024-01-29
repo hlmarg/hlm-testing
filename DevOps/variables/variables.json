@@ -1,0 +1,18 @@
+{
+    "Variables": [{
+        "Key": "CDK_API_URL",
+        "Value": "https://uat-3pa.dmotorworks.com/pip-extract/",
+        "Env": ["dev"]
+      },
+      {
+        "Key": "CDK_API_URL",
+        "Value": "https://3pa.dmotorworks.com/pip-extract/",
+        "Env": ["prod"]
+      },
+      {
+        "Key": "CDK_API_USERNAME",
+        "Value": "vettx",
+        "Env": ["dev", "prod"]
+      }
+    ]
+}
