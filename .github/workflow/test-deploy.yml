@@ -1,0 +1,99 @@
+name: API Code Deploy
+
+on: 
+  workflow_dispatch:
+    branches:
+      - dev
+      - main
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout GitHub action'
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+          creds: ${{ secrets.EXIT83_AZURE_SPN }}
+    
+    - name: Setup Node ${{ env.NODE_VERSION }} Environment
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+    
+    - name: 'Resolve Project Dependencies Using Npm'
+      shell: bash
+      run: |
+        npm install
+    
+    - name: Generate Artifact name
+      id: artifact-name
+      shell: bash
+      run: |
+        #echo "Creating the output"
+        artname=$(echo "hlm-slot-test")
+        echo "ArtifactName=$artname" >> $GITHUB_OUTPUT
+
+    - name: Generate a zip files
+      run: zip --symlinks -r hlm-slots-test.zip ./* -x DevOps/\* -x src/\* -x test/\* -x docker/\* -x .git/\* -x .github/\* -x *.json
+
+    - name: Upload build artifact 
+      uses: actions/upload-artifact@v3
+      with: 
+        name: ${{ steps.artifact-name.outputs.ArtifactName }}
+        path: hlm-slot-test.zip
+        retention-days: 1
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    env:
+      ArtifactName: ${{ needs.build.outputs.ArtifactName }}
+      webapp: ${{ needs.webapp-config.outputs.webapp }}
+    
+    steps:
+    - name: 'Checkout GitHub action'
+      uses: actions/checkout@v4
+      
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.ArtifactName }}
+
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+          creds: ${{ secrets.EXIT83_AZURE_SPN }}
+    
+## Deploy alternatives for WebApps
+
+    - name: 'Deploy WebApp'
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: hlm-slots-test
+        package: hlm-slots-test.zip
+       # publish-profile: ${{ steps.publishprofile.outputs.profile }}
+        startup-command: 'npm start'
+
+
+    #- name: 'Deploy WebApp'
+    #  id: webappdeploy
+    #  shell: pwsh
+    #  run: |
+    #    az extension add --name webapp
+    #    $CONTAINER= "temporal-deploy"
+    #    $expiry= (get-date).AddHours(1).ToUniversalTime().toString("yyyy-MM-dTH:mZ")
+    #    #updaload the zip file to the storage account
+    #    "Upload the code to the storage account"
+    #    az storage blob upload -f vettx-webapi-api/webapi-api.zip --account-name $env:apistg -c $CONTAINER -n $env:apistg --overwrite -o none
+    #    #Define the URL to the zip file and Deploy the webapp
+    #    $ZIP_URL=az storage blob generate-sas --full-uri --permissions r --expiry $expiry --account-name $env:apistg -c $CONTAINER -n $env:apistg
+    #    "Deploy the webapp"
+    #    az webapp deploy --name $env:webapp --resource-group $env:rg_name --type zip --src-url  $ZIP_URL --async false -o none
+    #    "Update the startup command"
+    #    az webapp config set --name $env:webapp -g $env:rg_name --startup-file $env:startup_command -o none
+    #    az webapp stop --name $env:webapp -g $env:rg_name -o none
+    #    az webapp start --name $env:webapp -g $env:rg_name -o none
