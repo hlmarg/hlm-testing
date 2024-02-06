@@ -21,6 +21,15 @@ jobs:
     - name: 'Checkout GitHub action'
       uses: actions/checkout@v4
 
+    - name: Run Trivy vulnerability scanner in repo mode
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        ignore-unfixed: true
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        #severity: 'CRITICAL'
+
     - name: Azure Login
       uses: Azure/login@v1.6.1
       with:
